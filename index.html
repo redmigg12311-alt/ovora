@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Kalam:wght@400;700&family=JetBrains+Mono:wght@600;700&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400..600,1,0"
+    rel="stylesheet" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,0,0">
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+  <!-- This links your styles.css file -->
+  <link rel="stylesheet" href="../css/styles.css">
+
+  <title>Happy Friendship Day ❤️</title>
+
+  <meta name="description"
+    content="A handcrafted Friendship Day surprise filled with memories, laughter, photos, heartfelt messages, fun interactions, and a special letter made just for someone unforgettable.">
+
+  <meta name="keywords"
+    content="Friendship Day, Happy Friendship Day, Best Friend, Friendship Website, Friendship Surprise, Interactive Website, Digital Scrapbook, Memories, Letter">
+
+  <meta name="author" content="Harit Mengar">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#FF5B45">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/gif"
+    href="https://assets-v2.lottiefiles.com/a/fa6167e2-1171-11ee-8963-bb5ba6166bc0/SzZZY9tQSl.gif">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="OVER • Happy Friendship Day ❤️">
+  <meta property="og:description"
+    content="An interactive Friendship Day experience filled with unforgettable memories, heartfelt moments, and a little surprise waiting inside.">
+  <meta property="og:url" content="https://your-domain.com">
+  <meta property="og:site_name" content="OVER">
+  <meta property="og:image" content="https://i.ibb.co/wNjcDQ3m/img1.webp">
+  <meta property="og:image:secure_url" content="https://i.ibb.co/wNjcDQ3m/img1.webp">
+  <meta property="og:image:type" content="image/webp">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="628">
+  <meta property="og:image:alt" content="OVER - Happy Friendship Day">
+  <meta property="og:locale" content="en_US">
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="OVER • Happy Friendship Day ❤️">
+  <meta name="twitter:description"
+    content="An interactive Friendship Day surprise packed with memories, photos, laughter, and heartfelt moments.">
+  <meta name="twitter:image" content="https://i.ibb.co/wNjcDQ3m/img1.webp">
+
+  <!-- Mobile -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="OVER">
+
+
+</head>
+
+<body>
+  <div class="stage">
+    <canvas id="confetti"></canvas>
+    <div class="phone" id="phone">
+      <div class="sparkle" style="
+            top: 120px;
+            left: 30px;
+            font-size: 16px;
+            animation-delay: 0s;
+            color: var(--coral);
+          ">
+        <span class="micon">auto_awesome</span>
+      </div>
+      <div class="sparkle" style="
+            top: 220px;
+            right: 24px;
+            font-size: 12px;
+            animation-delay: 1.4s;
+            color: var(--lilac);
+          ">
+        <span class="micon">auto_awesome</span>
+      </div>
+      <div class="sparkle" style="
+            bottom: 140px;
+            left: 22px;
+            font-size: 14px;
+            animation-delay: 2.6s;
+            color: var(--mint);
+          ">
+        <span class="micon">auto_awesome</span>
+      </div>
+      <div class="sparkle" style="
+            bottom: 260px;
+            right: 34px;
+            font-size: 10px;
+            animation-delay: 3.8s;
+            color: var(--amber);
+          ">
+        <span class="micon">auto_awesome</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+        <div class="progress-rest"></div>
+      </div>
+      <div class="notch"></div>
+      <div class="soundToggle" id="soundToggle" title="Toggle sound & haptics">
+        <span class="micon" style="font-size: 18px">volume_up</span>
+      </div>
+      <div class="backBtn" id="backBtn">←</div>
+
+      <div class="screens" id="screens">
+        <!-- -1 : locked door -->
+        <section class="screen active" id="sDoor" data-bg="dark">
+          <div class="door-zoom-wrap" id="doorZoomWrap">
+            <div class="eyebrow">SOMETHING'S LOCKED IN HERE</div>
+            <h1>
+              This one's just for<br /><span class="accent-hl" data-bind="friendName">[Friend's Name]</span>.
+            </h1>
+            <p class="sub" style="color: rgba(255, 255, 255, 0.7)">
+              Drag the key into the lock.
+            </p>
+            <div class="door-scene" id="doorScene">
+              <div class="door-frame">
+                <div class="door-glow" id="doorGlow"></div>
+                <div class="door" id="doorEl">
+                  <div class="door-lock" id="doorLock">
+                    <span class="micon">lock</span>
+                  </div>
+                  <div class="door-handle"></div>
+                </div>
+              </div>
+              <div class="key-wrap" id="keyWrap">
+                <span class="micon key-icon">key</span>
+              </div>
+            </div>
+            <div class="hint" style="color: rgba(255, 255, 255, 0.55)">
+              drag the key to the lock
+            </div>
+          </div>
+          <div class="door-flash" id="doorFlash"></div>
+        </section>
+
+        <!-- 0 : envelope -->
+        <section class="screen" id="s0" data-bg="pink">
+          <div class="envelope-wrap">
+            <div class="envelope-body"></div>
+            <div class="heart-seal">
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                <circle cx="8" cy="11" r="6" stroke="#17140E" stroke-width="2.4" />
+                <circle cx="14" cy="11" r="6" stroke="#17140E" stroke-width="2.4" />
+              </svg>
+            </div>
+            <div class="envelope-flap"></div>
+          </div>
+          <div class="msg-pill">
+            <div class="tape"></div>
+            <div class="tag">FOR YOU · NOW</div>
+            <div class="txt">1 unopened message</div>
+          </div>
+          <div class="msg-pill">
+            <div class="tape"></div>
+            <div class="tag">FOR YOU · NOW</div>
+            <div class="txt">Actually, it's a whole experience.</div>
+          </div>
+          <button class="btn" style="margin-top: 10px" onclick="openEnvelope()">
+            OPEN IT
+          </button>
+          <div class="hint">
+            best experienced with sound on
+            <span class="micon" style="font-size: 14px">volume_up</span>
+          </div>
+        </section>
+
+        <!-- 1 : museum -->
+        <section class="screen" id="s1" data-bg="amber">
+          <div class="eyebrow">STEP 1 · THE MUSEUM</div>
+          <h1>
+            Welcome to the extremely prestigious
+            <span class="accent-hl">Museum of Us</span>.
+          </h1>
+          <p class="sub">
+            Please don't touch anything. ...obviously, touch everything.
+          </p>
+          <div class="exhibits">
+            <div class="exhibit-card" style="background: var(--pink)" data-i="0" onclick="tapExhibit(this, 0)">
+              <span class="micon" style="font-size: 28px">folder</span>
+              <div class="check">✓</div>
+              <div class="lbl">EXHIBIT 001</div>
+            </div>
+            <div class="exhibit-card" style="background: var(--mint)" data-i="1" onclick="tapExhibit(this, 1)">
+              <span class="micon" style="font-size: 28px">lock</span>
+              <div class="check">✓</div>
+              <div class="lbl">EXHIBIT 002</div>
+            </div>
+            <div class="exhibit-card" style="background: var(--lilac)" data-i="2" onclick="tapExhibit(this, 2)">
+              <span class="micon" style="font-size: 28px">festival</span>
+              <div class="check">✓</div>
+              <div class="lbl">EXHIBIT 003</div>
+            </div>
+            <div class="exhibit-card" style="background: var(--amber)" data-i="3" onclick="tapExhibit(this, 3)">
+              <span class="micon" style="font-size: 28px">trophy</span>
+              <div class="check">✓</div>
+              <div class="lbl">EXHIBIT 004</div>
+            </div>
+          </div>
+          <div class="spacer"></div>
+          <button class="btn disabled" id="museumNext" onclick="goTo('s2')">
+            OPEN ALL 4 TO CONTINUE →
+          </button>
+          <div class="exhibit-overlay" id="exhibitOverlay">
+            <div class="eo-icon" id="eoIcon">
+              <span class="micon">folder</span>
+            </div>
+            <div class="eo-title" id="eoTitle">THE ARCHIVE</div>
+            <div class="eo-body" id="eoBody"></div>
+            <button class="btn" onclick="closeExhibitOverlay()">
+              CONTINUE →
+            </button>
+          </div>
+        </section>
+
+        <!-- 2 : curtain reveal -->
+        <section class="screen" id="s2" data-bg="cream">
+          <div class="eyebrow">EXHIBIT #005</div>
+
+          <div class="card">
+            Proof that friendship is mostly just finding one person whose
+            weirdness is compatible with yours.
+          </div>
+
+          <div class="curtain-box" id="curtainBox" onclick="openCurtain()">
+            <div class="curtain-photo" id="curtainPhotoEl">
+              <img src="https://i.ibb.co/S753f5Qc/Whats-App-Image-2026-07-12-at-10-01-14-PM.webp"
+                alt="Friendship Memory" class="curtain-img" loading="lazy" decoding="async" fetchpriority="low" />
+            </div>
+
+            <div class="curtain-half curtain-left">?</div>
+            <div class="curtain-half curtain-right">?</div>
+          </div>
+
+          <div class="hint" style="align-self: center">
+            Pull the curtain aside
+          </div>
+
+          <div class="spacer"></div>
+
+          <button class="btn" onclick="goTo('sStats')">CONTINUE →</button>
+        </section>
+
+        <!-- 2b : stats -->
+        <section class="screen" id="sStats" data-bg="mint">
+          <div class="eyebrow">STEP 2 · BY THE NUMBERS</div>
+          <h1>
+            Some very <span class="accent-hl">official</span> statistics.
+          </h1>
+          <p class="sub">Peer-reviewed by absolutely no one.</p>
+          <div class="stat-row">
+            <div class="stat-card">
+              <div class="stat-num" data-target="100" id="stat1">0</div>
+              <div class="stat-label">
+                % chance we're<br />unhinged together
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-num" data-target="847" id="stat2">0</div>
+              <div class="stat-label">
+                memes sent that<br />nobody asked for
+              </div>
+            </div>
+          </div>
+          <div class="stat-row">
+            <div class="stat-card">
+              <div class="stat-num" data-target="9999" id="stat3">0</div>
+              <div class="stat-label">inside jokes,<br />uncountable</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-num" data-target="0" id="stat4">0</div>
+              <div class="stat-label">regrets about<br />any of it</div>
+            </div>
+          </div>
+          <div class="spacer"></div>
+          <button class="btn" onclick="goTo('sQuiz')">
+            PLAY A QUICK GAME →
+          </button>
+        </section>
+
+        <!-- 2b-ii : this or that quiz -->
+        <section class="screen" id="sQuiz" data-bg="amber">
+          <div class="eyebrow">STEP 3 · GUESS MY PICK</div>
+          <h1>Do you actually <span class="accent-hl">know me</span>?</h1>
+          <p class="sub">Tap the one you think I'd choose. Let's find out.</p>
+          <div class="quiz-progress" id="quizProgress">1 / 5</div>
+          <div class="quiz-pair" id="quizPair"></div>
+          <div class="quiz-result" id="quizResult"></div>
+          <div class="quiz-score" id="quizScore"></div>
+          <div class="spacer"></div>
+          <button class="btn disabled" id="quizNext" onclick="goTo('sTimeline')">
+            CONTINUE →
+          </button>
+        </section>
+
+        <!-- 2c : memory timeline -->
+        <section class="screen" id="sTimeline" data-bg="pink">
+          <div class="eyebrow">STEP 4 · A FEW FAVORITES</div>
+          <h1>Some moments worth <span class="accent-hl">keeping</span>.</h1>
+          <div class="timeline" id="timeline">
+            <div class="tl-row" data-tl="0">
+              <div class="polaroid" style="transform: rotate(-4deg)">
+                <div class="polaroid-photo" id="tlPhoto0">
+                  <img src="https://i.ibb.co/b55CCvjg/97455524-f734-4117-8cb2-0ce472e327ed.webp" class="timeline-photo"
+                    alt="Memory" decoding="async" fetchpriority="high" draggable="false" />
+                </div>
+                <div class="polaroid-cap">that random day</div>
+              </div>
+              <div class="tl-text">
+                The kind of memory that makes no sense to anyone else but us.
+              </div>
+            </div>
+            <div class="tl-row reverse" data-tl="1">
+              <div class="tl-text">
+                Every plan somehow turning into a whole story.
+              </div>
+              <div class="polaroid" style="transform: rotate(3deg)">
+                <div class="polaroid-photo" id="tlPhoto1">
+                  <img src="https://i.ibb.co/JRYDcVVw/5f577e10-d845-48d3-9e9b-ba2003b66cc9.webp" class="timeline-photo"
+                    alt="That questionable plan" loading="lazy" decoding="async" fetchpriority="high" draggable="false"
+                    onclick="openImage(this.src)">
+                </div>
+                <div class="polaroid-cap">that questionable plan</div>
+              </div>
+            </div>
+            <div class="tl-row" data-tl="2">
+              <div class="polaroid" style="transform: rotate(-2deg)">
+                <div class="polaroid-photo" id="tlPhoto2">
+                  <img src="https://i.ibb.co/5xFTqWzn/5ba3c028-91b1-4534-ba6c-07de7583fdf8.webp" alt="The bad week"
+                    class="timeline-photo" loading="lazy" decoding="async" fetchpriority="high" draggable="false"
+                    onclick="openImage(this.src)">
+                </div>
+                <div class="polaroid-cap">the difficult time</div>
+              </div>
+              <div class="tl-text">
+                Whenever life feels heavy, remember what you always tell me <strong>Believe in God</strong>.
+              </div>
+            </div>
+            <div class="tl-row reverse" data-tl="3">
+              <div class="tl-text">
+                A 2am conversation that started as a joke and ended up meaning
+                something.
+              </div>
+              <div class="polaroid" style="transform: rotate(2deg)">
+                <div class="polaroid-photo" id="tlPhoto3">
+                  <img src="https://i.ibb.co/dsyR358W/Whats-App-Image-2026-08-01-at-2-49-14-PM.webp"
+                    class="timeline-photo" alt="2 AM conversation" loading="lazy" decoding="async" fetchpriority="low"
+                    draggable="false" onclick="openImage(this.src)">
+                </div>
+                <div class="polaroid-cap">2am, no reason</div>
+              </div>
+            </div>
+            <div class="tl-row" data-tl="4">
+              <div class="polaroid" style="transform: rotate(-3deg)">
+                <div class="polaroid-photo" id="tlPhoto4" style="background:linear-gradient(150deg,#dff5ee,#c6ecdd);">
+
+                  <img src="https://i.ibb.co/SXLDN0Py/13589ee3-d7fc-4061-bc85-709a7d89b790.webp"
+                    class="timeline-photo monkey-photo" alt="Monkey" loading="lazy" decoding="async" fetchpriority="low"
+                    draggable="false" onclick="openImage(this.src)">
+
+                </div>
+                <div class="polaroid-cap">monkey business</div>
+              </div>
+              <div class="tl-text">
+                Started as Harit. Promoted to your Monkey. Please give my money.🐵💸
+              </div>
+            </div>
+          </div>
+          <div class="hint" style="align-self:center;margin-top:10px;">
+            Tiny snapshots. Endless memories.
+          </div>
+          <div class="spacer"></div>
+
+          <button class="btn" onclick="goTo('sCleanup')">
+            ONE MORE THING →
+          </button>
+        </section>
+
+        <!-- 2d : cleanup / delete-keep -->
+        <section class="screen" id="sCleanup" data-bg="teal">
+          <div class="eyebrow" style="background: #fff">
+            STEP 5 · MEMORY REWIND
+          </div>
+          <h1 style="color: #fff">
+            Let's take one more look at our
+            <span style="color:var(--amber)">favorite memories.</span>
+          </h1>
+          <p class="sub" style="color: #fff; opacity: 0.85">
+            Swipe left to delete, right to keep. Try it.
+          </p>
+          <div class="row cu-btnrow">
+            <button class="btn secondary" id="cuDelete" onclick="cuChoose('delete')">
+              <span class="micon" style="font-size: 18px">delete</span> DELETE
+            </button>
+            <button class="btn mint" id="cuKeep" onclick="cuChoose('keep')">
+              <span class="micon" style="font-size: 18px">favorite</span> KEEP
+            </button>
+          </div>
+          <div class="cu-frame-wrap">
+            <div class="cu-tape"></div>
+            <div class="cu-counter" id="cuCounter">1 / 5</div>
+            <div class="cu-photo" id="cuPhoto" style="background: linear-gradient(160deg, #12294a, #1b3a63)">
+              <span class="micon" style="font-size: 60px; color: #fff">bedtime</span>
+            </div>
+            <div class="cu-overrule" id="cuOverrule"></div>
+          </div>
+          <div class="hint" style="align-self: center; color: #fff; opacity: 0.75">
+            no takebacks!
+          </div>
+          <div class="spacer"></div>
+          <button class="btn coral disabled" id="cuNext" onclick="goTo('sPress')">
+            CONTINUE →
+          </button>
+        </section>
+
+        <!-- 3 : do not press -->
+        <section class="screen" id="sPress" data-bg="cream" data-hazard="1">
+          <div class="warn-txt">do NOT.</div>
+          <div class="warn-tag">
+            <div class="warn-label">
+              <span class="micon">warning</span>
+              DO NOT PRESS
+            </div>
+          </div>
+          <div class="big-btn" onclick="pressButton()"></div>
+          <div class="seriously">seriously. do not.</div>
+        </section>
+
+        <!-- 4 : diagnostic -->
+        <section class="screen" id="sDiag" data-bg="cream" data-hazard="1">
+          <div class="diag-box">
+            <div class="diag-title">RUNNING FRIENDSHIP DIAGNOSTIC</div>
+            <div class="diag-row" data-r="0">
+              <span>Checking loyalty…</span><span class="res">✓ SUSPICIOUS</span>
+            </div>
+            <div class="diag-row" data-r="1">
+              <span>Checking emotional damage…</span><span class="res">✓ MUTUAL</span>
+            </div>
+            <div class="diag-row" data-r="2">
+              <span>Checking stupid conversations…</span><span class="res">✓ COUNT FAILED</span>
+            </div>
+            <div class="diag-row" data-r="3">
+              <span>Checking embarrassing intel…</span><span class="res">✓ CLASSIFIED</span>
+            </div>
+            <div class="diag-bar-track">
+              <div class="diag-bar-fill" id="diagFill"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5 : result -->
+        <section class="screen" id="sResult" data-bg="cream" data-hazard="1">
+          <div class="result-label">RESULT:</div>
+          <div class="result-title">YOU KNOW WAY<br />TOO MUCH.</div>
+          <div class="result-sub">
+            Unfortunately, we are now stuck together for life.
+          </div>
+          <div class="stamp" id="stamp">
+            NO CANCELLATIONS.<br />NO REFUNDS.
+          </div>
+          <button class="btn coral" style="max-width: 220px" onclick="goTo('sTrans')">
+            ACCEPT MY FATE
+          </button>
+        </section>
+
+        <!-- 6 : transition -->
+        <section class="screen" id="sTrans" data-bg="cream" data-hazard="1">
+          <div class="trans-line" data-l="0">OKAY.</div>
+          <div class="trans-line" data-l="1">JOKES ASIDE FOR A SECOND.</div>
+          <div class="trans-line" data-l="2">
+            THERE'S ONE THING I ACTUALLY WANTED TO SAY.
+          </div>
+        </section>
+
+        <!-- 7 : letter -->
+        <section class="screen" id="sLetter" data-bg="cream" data-hazard="1">
+          <div class="paper" id="paperFull"></div>
+          <div class="spacer"></div>
+          <button class="btn" onclick="goTo('sSearch')">
+            ONE LAST THING →
+          </button>
+        </section>
+
+        <!-- 9 : word search -->
+        <section class="screen" id="sSearch" data-bg="cream" data-hazard="1">
+          <div class="eyebrow">STEP 6 · FIND THE WORDS</div>
+          <div class="grid-wrap">
+            <div class="grid" id="wsGrid"></div>
+          </div>
+          <div class="ws-caption" id="wsCaption">
+            HAPPY FRIENDSHIP DAY, YOU FOOL
+            <span class="micon" style="
+                  font-size: 18px;
+                  color: var(--coral);
+                  vertical-align: -3px;
+                ">favorite</span>
+          </div>
+          <div class="spacer"></div>
+          <button class="btn" onclick="goTo('sAgreement')">
+            LAST STEP →
+          </button>
+        </section>
+
+        <!-- 10 : agreement -->
+        <section class="screen" id="sAgreement" data-bg="lilac">
+          <div class="agreement">
+            <h3>FRIENDSHIP RENEWAL AGREEMENT</h3>
+            <div class="who">
+              By continuing,
+              <span data-bind="friendName">[Friend's Name]</span> agrees to:
+            </div>
+            <div class="item" data-it="0">
+              <div class="check"><span class="mark">✓</span></div>
+              <div>Continue sending unnecessary memes</div>
+            </div>
+            <div class="item" data-it="1">
+              <div class="check"><span class="mark">✓</span></div>
+              <div>Provide emotional support when required</div>
+            </div>
+            <div class="item" data-it="2">
+              <div class="check"><span class="mark">✓</span></div>
+              <div>Pretend to listen to repeated stories</div>
+            </div>
+            <div class="item" data-it="3">
+              <div class="check"><span class="mark">✓</span></div>
+              <div>Participate in questionable plans</div>
+            </div>
+            <div class="item" data-it="4">
+              <div class="check"><span class="mark">✓</span></div>
+              <div>Remain available for random "bolo..." messages.</div>
+            </div>
+            <div class="item" data-it="5">
+              <div class="check"><span class="mark">✓</span></div>
+              <div>
+                Maintain confidentiality regarding embarrassing information
+              </div>
+            </div>
+            <div class="hr"></div>
+            <div class="terms">
+              <span>Term: <b>Lifetime</b></span><span>Cancellation: <b>None</b></span>
+            </div>
+            <button class="btn" onclick="acceptAgreement()">I ACCEPT</button>
+          </div>
+        </section>
+
+        <!-- 10b : our song -->
+        <section class="screen" id="sSong" data-bg="cream">
+          <div class="eyebrow">ONE LAST THING · OUR SONG</div>
+          <h1>
+            Every good story needs a
+            <span class="accent-hl">soundtrack</span>.
+          </h1>
+          <p class="sub">This one's ours. Scan it in Spotify.</p>
+          <div class="song-card">
+            <img class="song-code-img" src="https://i.ibb.co/QjzBCmMn/song.jpg" alt="Spotify code for our song" />
+          </div>
+          <ol class="song-steps">
+            <li>
+              <span class="num">1</span><span>Open the Spotify app.</span>
+            </li>
+            <li>
+              <span class="num">2</span><span>Tap the <b>search</b> tab, then tap the <b>camera icon</b> in
+                the top right corner.</span>
+            </li>
+            <li>
+              <span class="num">3</span><span>Point your camera at the striped code above — it'll load the
+                track automatically.</span>
+            </li>
+            <li>
+              <span class="num">4</span><span>No Spotify handy? Screenshot the code and scan it later — it
+                works from a photo too.</span>
+            </li>
+          </ol>
+          <div class="spacer"></div>
+          <button class="btn" onclick="goTo('sGuestbook')">CONTINUE →</button>
+        </section>
+
+        <!-- 10c : guestbook -->
+        <section class="screen" id="sGuestbook" data-bg="mint">
+          <div class="eyebrow">ONE MORE THING · YOUR TURN</div>
+          <h1>Say something <span class="accent-hl">back</span>.</h1>
+          <p class="sub">
+            Type whatever you want — this one actually gets sent to me.
+          </p>
+          <div class="gb-card" id="gbFormCard">
+            <textarea class="gb-textarea" id="gbInput" maxlength="220"
+              placeholder="Write your reply here..."></textarea>
+            <div class="gb-count"><span id="gbCount">0</span> / 220</div>
+            <div class="gb-error" id="gbError"></div>
+            <button class="btn coral" id="gbSealBtn" onclick="sealGuestbook()">
+              <span id="gbSealBtnLabel">SEAL &amp; SEND</span>
+              <span class="micon" style="font-size: 16px">favorite</span>
+            </button>
+          </div>
+          <div class="gb-card gb-sealed" id="gbSealedCard">
+            <div class="gb-sealed-tag">SENT</div>
+            <p class="gb-sealed-text" id="gbSealedText"></p>
+            <div class="hint" style="align-self: center">
+              delivered — I'll actually read this one
+            </div>
+          </div>
+          <div class="spacer"></div>
+          <button class="btn disabled" id="gbContinueBtn" onclick="goTo('sFinale')">
+            CONTINUE →
+          </button>
+        </section>
+
+        <!-- 11 : finale -->
+        <section class="screen" id="sFinale" data-bg="finale">
+          <div class="final-card">
+            <!-- <div class="celebrate">
+                <span class="micon">celebration</span>
+                <span class="micon">auto_awesome</span>
+                <span class="micon">celebration</span>
+              </div> -->
+
+            <h1>Happy Friendship Day</h1>
+
+            <div class="friend-name">
+              <span data-bind="friendName">[Friend's Name]</span>
+            </div>
+
+            <div class="friend-icons">
+              <span class="micon handshake">handshake</span>
+              <span class="micon heart">favorite</span>
+            </div>
+
+            <div class="message">
+              You're officially stuck with me forever. Thanks for being one of
+              the best people in my life.
+            </div>
+
+            <div class="button-group">
+              <button class="btn mint" onclick="restart()">
+                Replay Experience
+              </button>
+
+              <button class="btn coral" onclick="openShare()">
+                Save Friendship Card
+              </button>
+            </div>
+
+            <div class="footer">
+              Designed & Crafted with ❤️ by <strong>Harit Mengar</strong><br />
+              No Refunds • No Exchanges • Friendship Forever ♾️
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="shareOverlay" id="shareOverlay">
+        <div class="shareCard">
+          <canvas id="shareCanvas" width="600" height="800"></canvas>
+          <div class="shareDesigns" id="shareDesigns">
+            <button class="dbtn active" data-d="0" onclick="pickDesign(0)">
+              CERTIFICATE
+            </button>
+            <button class="dbtn" data-d="1" onclick="pickDesign(1)">
+              POLAROID
+            </button>
+            <button class="dbtn" data-d="2" onclick="pickDesign(2)">
+              RECEIPT
+            </button>
+          </div>
+          <div class="shareActions">
+            <button class="btn secondary" onclick="closeShare()">
+              CLOSE
+            </button>
+            <button class="btn mint" onclick="downloadShareCard()">
+              SAVE IMAGE
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js" defer></script>
+
+</body>
+
+</html>
