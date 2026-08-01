@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link
     href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Kalam:wght@400;700&family=JetBrains+Mono:wght@600;700&display=swap"
@@ -485,7 +485,9 @@
 
         <!-- 7 : letter -->
         <section class="screen" id="sLetter" data-bg="cream" data-hazard="1">
-          <div class="paper" id="paperFull"></div>
+          <div class="paper" id="paperFull">
+            <div class="paper-inner" id="paperInner"></div>
+          </div>
           <div class="spacer"></div>
           <button class="btn" onclick="goTo('sSearch')">
             ONE LAST THING →

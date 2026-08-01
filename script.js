@@ -1,3 +1,19 @@
+/* ---------- real viewport height fix (fallback for browsers without svh support) ---------- */
+(function () {
+    function setRealVH() {
+        document.documentElement.style.setProperty(
+            "--real-vh",
+            window.innerHeight * 0.01 + "px",
+        );
+    }
+    setRealVH();
+    window.addEventListener("resize", setRealVH);
+    window.addEventListener("orientationchange", setRealVH);
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener("resize", setRealVH);
+    }
+})();
+
 /* ============ EDIT YOUR CONTENT HERE ============ */
 const CONFIG = {
     friendName: "Janvi",
@@ -1005,7 +1021,106 @@ function letterSegments() {
     ];
 }
 
-function typeIntoElement(el, text, cursorEl, screen, token) {
+/* ---------- keep screen awake (Wake Lock API + fallback) ---------- */
+// Two problems, two fixes:
+// 1) Several browsers (notably iOS Safari) only grant a wake lock when
+//    the request happens directly inside a genuine user gesture. The
+//    letter screen opens itself via a timer after a transition, not a
+//    direct tap, so a request fired only there gets silently refused.
+//    Fix: also (re)request on every real tap anywhere in the app, so
+//    the lock is already active well before the letter appears.
+// 2) Some browsers — especially in-app browsers like the ones used to
+//    open a shared link inside WhatsApp/Instagram — don't support the
+//    Wake Lock API at all. Fix: fall back to the classic "silent
+//    looping video" trick, which keeps the screen on in most of those
+//    browsers too.
+let wakeLockObj = null;
+let noSleepVideo = null;
+
+function ensureNoSleepVideo() {
+    if (noSleepVideo) return noSleepVideo;
+    const v = document.createElement("video");
+    v.muted = true;
+    v.setAttribute("muted", "");
+    v.setAttribute("loop", "");
+    v.setAttribute("playsinline", "");
+    v.setAttribute("webkit-playsinline", "");
+    v.loop = true;
+    v.disableRemotePlayback = true;
+    v.style.cssText =
+        "position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0;pointer-events:none;";
+    // Tiny (16x16px, silent, looping) clip — just enough to convince the
+    // browser a video is "playing" so it won't dim/lock the screen. Two
+    // sources so whichever codec the device supports (H.264 for iOS/most
+    // browsers, VP8/WebM as a backup) will load.
+    const srcMp4 = document.createElement("source");
+    srcMp4.type = "video/mp4";
+    srcMp4.src =
+        "data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAAM3bW9vdgAAAGxtdmhkAAAAAAAAAAAAAAAAAAAD6AAAE4gAAQAAAQAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAmF0cmFrAAAAXHRraGQAAAADAAAAAAAAAAAAAAABAAAAAAAAE4gAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAABAAAAAQAAAAAAAkZWR0cwAAABxlbHN0AAAAAAAAAAEAABOIAAAAAAABAAAAAAHZbWRpYQAAACBtZGhkAAAAAAAAAAAAAAAAAABAAAABQABVxAAAAAAALWhkbHIAAAAAAAAAAHZpZGUAAAAAAAAAAAAAAABWaWRlb0hhbmRsZXIAAAABhG1pbmYAAAAUdm1oZAAAAAEAAAAAAAAAAAAAACRkaW5mAAAAHGRyZWYAAAAAAAAAAQAAAAx1cmwgAAAAAQAAAURzdGJsAAAAuHN0c2QAAAAAAAAAAQAAAKhhdmMxAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAABAAEABIAAAASAAAAAAAAAABFUxhdmM2MC4zMS4xMDIgbGlieDI2NAAAAAAAAAAAAAAAGP//AAAALmF2Y0MBQsAe/+EAFmdCwB7ZHsBEAAADAAQAAAMACDxYuSABAAVoy4PLIAAAABBwYXNwAAAAAQAAAAEAAAAUYnRydAAAAAAAAARGAAAERgAAABhzdHRzAAAAAAAAAAEAAAAFAABAAAAAABRzdHNzAAAAAAAAAAEAAAABAAAAHHN0c2MAAAAAAAAAAQAAAAEAAAAFAAAAAQAAAChzdHN6AAAAAAAAAAAAAAAFAAAChgAAAAoAAAAKAAAACQAAAAkAAAAUc3RjbwAAAAAAAAABAAADZwAAAGJ1ZHRhAAAAWm1ldGEAAAAAAAAAIWhkbHIAAAAAAAAAAG1kaXJhcHBsAAAAAAAAAAAAAAAALWlsc3QAAAAlqXRvbwAAAB1kYXRhAAAAAQAAAABMYXZmNjAuMTYuMTAwAAAACGZyZWUAAAK0bWRhdAAAAnAGBf//bNxF6b3m2Ui3lizYINkj7u94MjY0IC0gY29yZSAxNjQgcjMxMDggMzFlMTlmOSAtIEguMjY0L01QRUctNCBBVkMgY29kZWMgLSBDb3B5bGVmdCAyMDAzLTIwMjMgLSBodHRwOi8vd3d3LnZpZGVvbGFuLm9yZy94MjY0Lmh0bWwgLSBvcHRpb25zOiBjYWJhYz0wIHJlZj0zIGRlYmxvY2s9MTowOjAgYW5hbHlzZT0weDE6MHgxMTEgbWU9aGV4IHN1Ym1lPTcgcHN5PTEgcHN5X3JkPTEuMDA6MC4wMCBtaXhlZF9yZWY9MSBtZV9yYW5nZT0xNiBjaHJvbWFfbWU9MSB0cmVsbGlzPTEgOHg4ZGN0PTAgY3FtPTAgZGVhZHpvbmU9MjEsMTEgZmFzdF9wc2tpcD0xIGNocm9tYV9xcF9vZmZzZXQ9LTIgdGhyZWFkcz0xIGxvb2thaGVhZF90aHJlYWRzPTEgc2xpY2VkX3RocmVhZHM9MCBucj0wIGRlY2ltYXRlPTEgaW50ZXJsYWNlZD0wIGJsdXJheV9jb21wYXQ9MCBjb25zdHJhaW5lZF9pbnRyYT0wIGJmcmFtZXM9MCB3ZWlnaHRwPTAga2V5aW50PTI1MCBrZXlpbnRfbWluPTEgc2NlbmVjdXQ9NDAgaW50cmFfcmVmcmVzaD0wIHJjX2xvb2thaGVhZD00MCByYz1jcmYgbWJ0cmVlPTEgY3JmPTIzLjAgcWNvbXA9MC42MCBxcG1pbj0wIHFwbWF4PTY5IHFwc3RlcD00IGlwX3JhdGlvPTEuNDAgYXE9MToxLjAwAIAAAAAOZYiEBf///w9FAAFXn4AAAAAGQZo4C/qAAAAABkGaVAL+oAAAAAVBmmAW9QAAAAVBmoAV9Q==";
+    const srcWebm = document.createElement("source");
+    srcWebm.type = "video/webm";
+    srcWebm.src =
+        "data:video/webm;base64,GkXfo59ChoEBQveBAULygQRC84EIQoKEd2VibUKHgQJChYECGFOAZwEAAAAAAAH8EU2bdLpNu4tTq4QVSalmU6yBoU27i1OrhBZUrmtTrIHYTbuMU6uEElTDZ1OsggEeTbuMU6uEHFO7a1OsggHm7AEAAAAAAABZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVSalmsirXsYMPQkBNgI1MYXZmNjAuMTYuMTAwV0GNTGF2ZjYwLjE2LjEwMESJiECfQAAAAAAAFlSua8GuAQAAAAAAADjXgQFzxYgXCZLiBWWDN5yBACK1nIN1bmSIgQCGhVZfVlA4g4EBI+ODhDuaygDgibCBELqBEJqBAhJUw2f8c3OgY8CAZ8iaRaOHRU5DT0RFUkSHjUxhdmY2MC4xNi4xMDBzc9ZjwItjxYgXCZLiBWWDN2fIoUWjh0VOQ09ERVJEh5RMYXZjNjAuMzEuMTAyIGxpYnZweGfIoUWjiERVUkFUSU9ORIeTMDA6MDA6MDIuMDAwMDAwMDAwAB9DtnXC54EAo6OBAACAEAIAnQEqEAAQAABHCIWFiJmEiAICAAwNYAD+/6tQgKOYgQPoALEBAAUQrAAYADA/9AwAAAD+9rkAHFO7a5G7j7OBALeK94EB8YIBn/CBAw==";
+    v.appendChild(srcMp4);
+    v.appendChild(srcWebm);
+    document.body.appendChild(v);
+    v.load();
+    noSleepVideo = v;
+    return v;
+}
+function startNoSleepFallback() {
+    const v = ensureNoSleepVideo();
+    const p = v.play();
+    if (p && p.catch) p.catch(function () {});
+}
+function stopNoSleepFallback() {
+    if (noSleepVideo) noSleepVideo.pause();
+}
+
+async function requestWakeLock() {
+    if ("wakeLock" in navigator) {
+        try {
+            wakeLockObj = await navigator.wakeLock.request("screen");
+            wakeLockObj.addEventListener("release", function () {
+                wakeLockObj = null;
+            });
+        } catch (e) {
+            wakeLockObj = null;
+        }
+    }
+    // Run the video fallback alongside the native lock (harmless if the
+    // native lock already worked) so it's ready for browsers that don't
+    // support/allow the Wake Lock API at all.
+    startNoSleepFallback();
+}
+function releaseWakeLock() {
+    if (wakeLockObj) {
+        wakeLockObj.release().catch(function () {});
+        wakeLockObj = null;
+    }
+    stopNoSleepFallback();
+}
+// Any genuine tap anywhere in the experience (re)acquires the lock —
+// this is what satisfies Safari's "must follow a real user gesture"
+// requirement, since the letter screen itself opens automatically via
+// a timer, not a direct tap.
+document.addEventListener(
+    "pointerdown",
+    function () {
+        requestWakeLock();
+    },
+    { passive: true },
+);
+// The OS/browser auto-releases the native lock when the tab is hidden.
+// Re-acquire it once the user comes back.
+document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "visible" && !wakeLockObj) {
+        requestWakeLock();
+    }
+});
+
+let letterAutoScrolling = false;
+function typeIntoElement(el, text, cursorEl, paper, token) {
     return new Promise(function (resolve) {
         let i = 0;
         function step() {
@@ -1019,10 +1134,20 @@ function typeIntoElement(el, text, cursorEl, screen, token) {
             i++;
             if (ch === " " || i === text.length) sTypeKey();
             if (!letterManualOverride) {
-                const cRect = cursorEl.getBoundingClientRect();
-                const sRect = screen.getBoundingClientRect();
-                if (cRect.bottom > sRect.bottom - 44) {
-                    screen.scrollTop += cRect.bottom - (sRect.bottom - 64);
+                // Measured via bounding rects (rather than offsetTop) so
+                // it stays correct regardless of any wrapping element
+                // between the cursor and the scroll container.
+                const cursorBottom =
+                    cursorEl.getBoundingClientRect().bottom -
+                    paper.getBoundingClientRect().top +
+                    paper.scrollTop;
+                const visibleBottom = paper.scrollTop + paper.clientHeight;
+                if (cursorBottom > visibleBottom - 50) {
+                    letterAutoScrolling = true;
+                    paper.scrollTop = cursorBottom - paper.clientHeight + 60;
+                    requestAnimationFrame(function () {
+                        letterAutoScrolling = false;
+                    });
                 }
             }
             let delay = 17 + Math.random() * 22;
@@ -1036,15 +1161,18 @@ function typeIntoElement(el, text, cursorEl, screen, token) {
 async function typeLetter() {
     const token = ++letterTypingToken;
     letterManualOverride = false;
-    const screen = document.getElementById("sLetter");
+    requestWakeLock();
     const paper = document.getElementById("paperFull");
-    screen.scrollTop = 0;
-    paper.innerHTML = "";
+    const paperInner = document.getElementById("paperInner");
+    paper.scrollTop = 0;
+    paperInner.innerHTML = "";
     paper.classList.remove("show");
     requestAnimationFrame(function () {
         paper.classList.add("show");
     });
-    await wait(350);
+    // Wait for the screen's own enter transition (0.55s) to finish before
+    // typing starts, so layout has fully settled.
+    await wait(600);
 
     const segs = letterSegments();
     for (let s = 0; s < segs.length; s++) {
@@ -1056,7 +1184,7 @@ async function typeLetter() {
             container.className = "sign-block";
             target = document.createElement("p");
             container.appendChild(target);
-            paper.appendChild(container);
+            paperInner.appendChild(container);
             requestAnimationFrame(function () {
                 container.classList.add("show");
             });
@@ -1080,12 +1208,12 @@ async function typeLetter() {
             } else {
                 target = container;
             }
-            paper.appendChild(container);
+            paperInner.appendChild(container);
         }
         const cursor = document.createElement("span");
         cursor.className = "letter-cursor";
         target.appendChild(cursor);
-        await typeIntoElement(target, seg.text, cursor, screen, token);
+        await typeIntoElement(target, seg.text, cursor, paper, token);
         if (token !== letterTypingToken) return;
         if (seg.icon) {
             const icon = document.createElement("span");
@@ -1102,13 +1230,15 @@ async function typeLetter() {
     }
 }
 function stopLetterAutoScroll() {
+    // Ignore scroll events we triggered ourselves — only a genuine
+    // user-initiated scroll (dragging the letter) should hand control
+    // back to the user.
+    if (letterAutoScrolling) return;
     letterManualOverride = true;
 }
 (function () {
-    const screen = document.getElementById("sLetter");
-    ["wheel", "touchstart", "pointerdown"].forEach(function (evt) {
-        screen.addEventListener(evt, stopLetterAutoScroll, { passive: true });
-    });
+    const paper = document.getElementById("paperFull");
+    paper.addEventListener("scroll", stopLetterAutoScroll, { passive: true });
 })();
 
 function acceptAgreement() {
@@ -1750,7 +1880,8 @@ function restart() {
     });
     letterTypingToken++;
     letterManualOverride = false;
-    document.getElementById("paperFull").innerHTML = "";
+    releaseWakeLock();
+    document.getElementById("paperInner").innerHTML = "";
     document.getElementById("paperFull").classList.remove("show");
     keyDragUsed = false;
     const keyWrap = document.getElementById("keyWrap");

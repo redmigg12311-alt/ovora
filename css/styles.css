@@ -53,6 +53,8 @@ body {
     16px 16px;
   background-color: #e9e2cf;
   min-height: 100vh;
+  min-height: calc(var(--real-vh, 1vh) * 100);
+  min-height: 100svh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -66,6 +68,8 @@ body {
   height: 860px;
   max-width: 100vw;
   max-height: 100vh;
+  max-height: calc(var(--real-vh, 1vh) * 100);
+  max-height: 100svh;
   perspective: 1400px;
 }
 
@@ -106,11 +110,51 @@ body {
   .stage {
     width: 100vw;
     height: 100vh;
+    height: calc(var(--real-vh, 1vh) * 100);
+    height: 100svh;
   }
 
   .phone {
     border-radius: 0;
     border: none;
+  }
+}
+
+/* Narrow phones (e.g. iPhone SE, small Android) — tighten padding & type
+   so content has more breathing room instead of feeling cramped */
+@media (max-width: 380px) {
+  .screen {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  .eyebrow {
+    font-size: 10px;
+    padding: 6px 12px;
+  }
+
+  .exhibits {
+    gap: 10px 8px;
+  }
+}
+
+@media (max-width: 340px) {
+  .screen {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  h1 {
+    font-size: 22px;
+  }
+
+  .btn {
+    padding-left: 16px;
+    padding-right: 16px;
   }
 }
 
@@ -217,7 +261,7 @@ body {
 .screen {
   position: absolute;
   inset: 0;
-  padding: 70px 26px 40px;
+  padding: 70px 26px calc(40px + env(safe-area-inset-bottom, 0px));
   display: flex;
   flex-direction: column;
   opacity: 0;
@@ -230,6 +274,7 @@ body {
   overflow-y: auto;
   -ms-overflow-style: none;
   scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 .screen.active {
@@ -1636,6 +1681,69 @@ p.sub {
   user-select: none;
 }
 
+/* Memory Rewind (sCleanup) on short viewports — the card's height was
+   driven purely by width via aspect-ratio, so it grew taller than the
+   visible screen and forced a page scroll that fights with the swipe
+   gesture. Shrink the card and tighten spacing so it fits in view. */
+@media (max-height: 780px) {
+  #sCleanup {
+    padding-top: 58px;
+  }
+
+  #sCleanup .eyebrow {
+    margin-bottom: 10px;
+  }
+
+  #sCleanup h1 {
+    font-size: 22px;
+    margin-bottom: 4px;
+  }
+
+  #sCleanup .sub {
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+
+  #sCleanup .cu-btnrow {
+    margin-bottom: 10px;
+  }
+
+  #sCleanup .cu-frame-wrap {
+    padding: 10px;
+    margin-top: 2px;
+  }
+
+  #sCleanup .cu-photo {
+    aspect-ratio: 4/3.2;
+    font-size: 48px;
+  }
+
+  #sCleanup .hint {
+    margin-top: 4px;
+    font-size: 12px;
+  }
+}
+
+@media (max-height: 640px) {
+  #sCleanup {
+    padding-top: 50px;
+  }
+
+  #sCleanup h1 {
+    font-size: 19px;
+  }
+
+  #sCleanup .sub {
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+
+  #sCleanup .cu-photo {
+    aspect-ratio: 4/2.5;
+    font-size: 38px;
+  }
+}
+
 .cu-photo:active {
   cursor: grabbing;
 }
@@ -1949,7 +2057,46 @@ p.sub {
   background-position: 0 1px;
 }
 
-.paper::before {
+/* Fixed letter canvas: the paper itself scrolls internally so the
+   header controls and the CTA button below never move. */
+#sLetter {
+  overflow: hidden;
+}
+
+#sLetter .paper {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+#sLetter .paper::-webkit-scrollbar {
+  display: none;
+}
+
+#sLetter .spacer {
+  display: none;
+}
+
+#sLetter .btn {
+  margin-top: 14px;
+  flex-shrink: 0;
+}
+
+.paper-inner {
+  position: relative;
+  z-index: 0;
+}
+
+/* The line lives on the inner wrapper (which is sized to the full
+   letter content, not the visible scroll viewport) so it scrolls up
+   together with the text instead of staying pinned in place while
+   the paragraphs move past it. z-index: -1 (scoped to paper-inner's
+   own stacking context) keeps it painted BEHIND every paragraph and
+   highlight/sign-block card, instead of cutting across their faces. */
+.paper-inner::before {
   content: "";
   position: absolute;
   left: 16px;
@@ -1958,6 +2105,7 @@ p.sub {
   width: 2px;
   background: #e79;
   opacity: 0.35;
+  z-index: -1;
 }
 
 .paper p {
